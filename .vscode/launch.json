@@ -14,7 +14,7 @@
                 "--cluster-key",
                 "--key-secret",
                 "test-public", 
-                "--encrypt",
+                "--decrypt",
                 "-f",
                 "example/test_unencrypted.yaml",
             ]

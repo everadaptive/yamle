@@ -199,6 +199,11 @@ func main() {
 			privKey = exportPEMStrToPrivKey(privKeyPEM)
 		}
 
+		if privKey == nil {
+			fmt.Printf("No private key available for decryption")
+			return
+		}
+
 		AddResolvers("!encrypted", resolveEncrypted)
 	}
 
