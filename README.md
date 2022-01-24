@@ -15,12 +15,12 @@ value3: "I'm not a secret"
 ## Commands
 encrypt with local keys
 ```
-yamle --cluster-key --encrypt ./examples/test4.yaml
+yamle --cluster-key --encrypt example/test_mixed_test_keys.yaml
 ```
 
 decrypt with local keys
 ```
-yamle --cluster-key --decrypt ./examples/test4.yaml
+yamle --cluster-key --decrypt example/test_mixed_test_keys.yaml
 ```
 
 generate cluster keys
@@ -30,12 +30,12 @@ yamle --cluster-key --gen-keys
 
 encrypt with cluster keys
 ```
-yamle --cluster-key --encrypt ./examples/test4.yaml
+yamle --cluster-key --encrypt example/test_unencrypted.yaml > example/test_encrypted_cluster_keys.yaml
 ```
 
 decrypt with cluster keys
 ```
-yamle --cluster-key --decrypt ./examples/test4.yaml
+yamle --cluster-key --decrypt example/test_encrypted_cluster_keys.yaml
 ```
 
 ## Building

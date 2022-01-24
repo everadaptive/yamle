@@ -24,3 +24,6 @@ yamle
 *.swp
 *.swo
 *~
+
+# cluster_keys_test
+example/test_encrypted_cluster_keys.yaml
