@@ -60,8 +60,15 @@ func GetKeyFromCluster(name, namespace string) (*RSAKeyPair, error) {
 		return nil, err
 	}
 
-	return &RSAKeyPair{
-		PublicKey:  exportPEMStrToPubKey(s.Data["public.pem"]),
-		PrivateKey: exportPEMStrToPrivKey(s.Data["private.pem"]),
-	}, nil
+	kp := RSAKeyPair{}
+
+	if len(s.Data["private.pem"]) > 0 {
+		kp.PrivateKey = exportPEMStrToPrivKey(s.Data["private.pem"])
+	}
+
+	if len(s.Data["public.pem"]) > 0 {
+		kp.PublicKey = exportPEMStrToPubKey(s.Data["public.pem"])
+	}
+
+	return &kp, nil
 }

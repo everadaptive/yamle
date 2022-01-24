@@ -179,15 +179,25 @@ func main() {
 
 	// Register custom tag resolvers
 	if encrypt {
-		pubKeyPEM := readKeyFromFile(pubKeyFile)
-		pubKey = exportPEMStrToPubKey(pubKeyPEM)
+		if clusterKey {
+			key, _ := GetKeyFromCluster(clusterKeySecret, clusterKeysNamespace)
+			pubKey = key.PublicKey
+		} else {
+			pubKeyPEM := readKeyFromFile(pubKeyFile)
+			pubKey = exportPEMStrToPubKey(pubKeyPEM)
+		}
 
 		AddResolvers("!encrypt", resolveEncrypt)
 	}
 
 	if decrypt {
-		privKeyPEM := readKeyFromFile(privKeyFile)
-		privKey = exportPEMStrToPrivKey(privKeyPEM)
+		if clusterKey {
+			key, _ := GetKeyFromCluster(clusterKeySecret, clusterKeysNamespace)
+			privKey = key.PrivateKey
+		} else {
+			privKeyPEM := readKeyFromFile(privKeyFile)
+			privKey = exportPEMStrToPrivKey(privKeyPEM)
+		}
 
 		AddResolvers("!encrypted", resolveEncrypted)
 	}
