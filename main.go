@@ -150,7 +150,7 @@ func main() {
 
 		priv, pub := generateKeyPair(2048)
 		if clusterKey {
-			SaveKeyToCluster(exportPrivKeyAsPEMStr(priv), exportPrivKeyAsPEMStr(priv), clusterKeySecret, clusterKeysNamespace)
+			SaveKeyToCluster(exportPubKeyAsPEMStr(pub), exportPrivKeyAsPEMStr(priv), clusterKeySecret, clusterKeysNamespace)
 		} else {
 			if _, err := os.Stat(privKeyFile); err == nil {
 				fmt.Printf("priv key already exists %s\n", privKeyFile)
