@@ -187,6 +187,11 @@ func main() {
 			pubKey = exportPEMStrToPubKey(pubKeyPEM)
 		}
 
+		if pubKey == nil {
+			fmt.Printf("No public key available for encryption")
+			return
+		}
+
 		AddResolvers("!encrypt", resolveEncrypt)
 	}
 
