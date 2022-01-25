@@ -11,11 +11,7 @@
             "mode": "auto",
             "program": "${fileDirname}",
             "args": [
-                "--cluster-key",
-                "--key-secret",
-                "test-public", 
-                "--decrypt",
-                "-f",
+                "encrypt",
                 "example/test_unencrypted.yaml",
             ]
         }

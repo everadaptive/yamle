@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rsa"
 	"fmt"
+	"io/ioutil"
 
 	"github.com/everadaptive/yamle/pkg/keys"
 	"github.com/everadaptive/yamle/pkg/yamle"
@@ -12,8 +13,9 @@ import (
 
 var (
 	decryptCmd = &cobra.Command{
-		Use:   "decrypt",
+		Use:   "decrypt <file>",
 		Short: "Decrypt a YAML file",
+		Args:  cobra.MinimumNArgs(1),
 		Run:   decrypt,
 	}
 )
@@ -27,15 +29,13 @@ func decrypt(cmd *cobra.Command, args []string) {
 	} else {
 		keyPEM, err := keys.ReadKeyFromFile(keyFile)
 		if err != nil {
-			fmt.Printf("error reading key '%s': %s\n", keyFile, err)
-			return
+			cobra.CheckErr(fmt.Errorf("error reading key file %s", err))
 		}
 		privKey = keys.ExportPEMStrToPrivKey(keyPEM)
 	}
 
 	if privKey == nil {
-		fmt.Printf("No private key available for decryption")
-		return
+		cobra.CheckErr(fmt.Errorf("no private key available in '%s'", keyFile))
 	}
 
 	for _, fileName := range args {
@@ -43,6 +43,14 @@ func decrypt(cmd *cobra.Command, args []string) {
 		ctx = context.WithValue(ctx, yamle.PrivateKey, privKey)
 		ctx = context.WithValue(ctx, yamle.PublicKey, nil)
 
-		yamle.DoIt(ctx, "!encrypted", fileName)
+		out, err := yamle.DoIt(ctx, "!encrypted", fileName)
+		cobra.CheckErr(err)
+
+		if inPlace {
+			ioutil.WriteFile(fileName, out, 0644)
+			return
+		}
+
+		fmt.Printf("%s\n", string(out))
 	}
 }

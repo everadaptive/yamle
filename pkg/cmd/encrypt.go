@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rsa"
 	"fmt"
+	"io/ioutil"
 
 	"github.com/everadaptive/yamle/pkg/keys"
 	"github.com/everadaptive/yamle/pkg/yamle"
@@ -12,8 +13,9 @@ import (
 
 var (
 	encryptCmd = &cobra.Command{
-		Use:   "encrypt",
+		Use:   "encrypt <file>",
 		Short: "Encrypt a YAML file",
+		Args:  cobra.MinimumNArgs(1),
 		Run:   encrypt,
 	}
 )
@@ -24,18 +26,23 @@ func encrypt(cmd *cobra.Command, args []string) {
 	if clusterKey {
 		key, _ := keys.GetKeyFromCluster(clusterKeyName, clusterKeyNamespace)
 		pubKey = key.PublicKey
+		if pubKey == nil {
+			pubKey = &key.PrivateKey.PublicKey
+		}
 	} else {
 		keyPEM, err := keys.ReadKeyFromFile(keyFile)
 		if err != nil {
-			fmt.Printf("error reading key '%s': %s\n", keyFile, err)
-			return
+			cobra.CheckErr(fmt.Errorf("error reading key file %s", err))
 		}
 		pubKey = keys.ExportPEMStrToPubKey(keyPEM)
+		if pubKey == nil {
+			privKey := keys.ExportPEMStrToPrivKey(keyPEM)
+			pubKey = &privKey.PublicKey
+		}
 	}
 
 	if pubKey == nil {
-		fmt.Printf("No private key available for encryption")
-		return
+		cobra.CheckErr(fmt.Errorf("no public key available in '%s'", keyFile))
 	}
 
 	for _, fileName := range args {
@@ -43,6 +50,14 @@ func encrypt(cmd *cobra.Command, args []string) {
 		ctx = context.WithValue(ctx, yamle.PrivateKey, nil)
 		ctx = context.WithValue(ctx, yamle.PublicKey, pubKey)
 
-		yamle.DoIt(ctx, "!encrypt", fileName)
+		out, err := yamle.DoIt(ctx, "!encrypt", fileName)
+		cobra.CheckErr(err)
+
+		if inPlace {
+			ioutil.WriteFile(fileName, out, 0644)
+			return
+		}
+
+		fmt.Printf("%s\n", string(out))
 	}
 }
