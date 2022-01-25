@@ -18,6 +18,7 @@ var (
 	clusterKeyNamespace string
 	keyFile             string
 	inPlace             bool
+	keySize             int
 
 	envPrefix = "YAMLE"
 
@@ -45,6 +46,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&clusterKeyNamespace, "cluster-key-namespace", "", "the namespace of the secret in Kubernetes")
 
 	rootCmd.PersistentFlags().StringVar(&keyFile, "key-file", "", "path to a PEM formatted key")
+	rootCmd.PersistentFlags().IntVar(&keySize, "key-size", 2048, "size of generated keys (default is 2048)")
 
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(encryptCmd)

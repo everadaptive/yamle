@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/rsa"
 
-	"github.com/spf13/cobra"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -16,7 +15,7 @@ type RSAKeyPair struct {
 	PrivateKey *rsa.PrivateKey
 }
 
-func SaveKeyToCluster(pubPem, privPem, name, namespace string) {
+func SaveKeyToCluster(pubPem, privPem, name, namespace string) error {
 	s := corev1.Secret{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: name,
@@ -34,13 +33,15 @@ func SaveKeyToCluster(pubPem, privPem, name, namespace string) {
 
 	c, err := client.New(config.GetConfigOrDie(), client.Options{})
 	if err != nil {
-		cobra.CheckErr(err)
+		return err
 	}
 
 	err = c.Create(context.Background(), &s)
 	if err != nil {
-		cobra.CheckErr(err)
+		return err
 	}
+
+	return nil
 }
 
 func GetKeyFromCluster(name, namespace string) (*RSAKeyPair, error) {

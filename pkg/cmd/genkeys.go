@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/everadaptive/yamle/pkg/keys"
 	"github.com/spf13/cobra"
 )
 
@@ -13,5 +14,16 @@ var genkeysCmd = &cobra.Command{
 }
 
 func genkeys(cmd *cobra.Command, args []string) {
-	fmt.Println("Hugo Static Site Generator v0.9 -- HEAD")
+	priv, pub := keys.GenerateKeyPair(keySize)
+
+	if clusterKey {
+		err := keys.SaveKeyToCluster(keys.ExportPubKeyAsPEMStr(pub), keys.ExportPrivKeyAsPEMStr(priv), clusterKeyName, clusterKeyNamespace)
+		cobra.CheckErr(err)
+	} else {
+		err := keys.SaveKeyToFile(keys.ExportPubKeyAsPEMStr(pub), fmt.Sprintf("%s.%s", keyFile, "pub"))
+		cobra.CheckErr(err)
+
+		err = keys.SaveKeyToFile(keys.ExportPrivKeyAsPEMStr(priv), keyFile)
+		cobra.CheckErr(err)
+	}
 }

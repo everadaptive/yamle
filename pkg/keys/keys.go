@@ -5,7 +5,9 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
+	"fmt"
 	"io/ioutil"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -43,9 +45,13 @@ func ExportPrivKeyAsPEMStr(privkey *rsa.PrivateKey) string {
 
 }
 
-func SaveKeyToFile(keyPem, filename string) {
+func SaveKeyToFile(keyPem, filename string) error {
+	if _, err := os.Stat(filename); err == nil {
+		return fmt.Errorf("file '%s' already exists, will not overwrite", filename)
+	}
+
 	pemBytes := []byte(keyPem)
-	ioutil.WriteFile(filename, pemBytes, 0400)
+	return ioutil.WriteFile(filename, pemBytes, 0400)
 }
 
 // Decode private key struct from PEM string
