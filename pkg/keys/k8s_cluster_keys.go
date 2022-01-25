@@ -1,4 +1,4 @@
-package main
+package keys
 
 import (
 	"context"
@@ -63,11 +63,11 @@ func GetKeyFromCluster(name, namespace string) (*RSAKeyPair, error) {
 	kp := RSAKeyPair{}
 
 	if len(s.Data["private.pem"]) > 0 {
-		kp.PrivateKey = exportPEMStrToPrivKey(s.Data["private.pem"])
+		kp.PrivateKey = ExportPEMStrToPrivKey(s.Data["private.pem"])
 	}
 
 	if len(s.Data["public.pem"]) > 0 {
-		kp.PublicKey = exportPEMStrToPubKey(s.Data["public.pem"])
+		kp.PublicKey = ExportPEMStrToPubKey(s.Data["public.pem"])
 	}
 
 	return &kp, nil

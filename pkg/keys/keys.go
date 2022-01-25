@@ -1,4 +1,4 @@
-package main
+package keys
 
 import (
 	"crypto/rand"
@@ -9,7 +9,7 @@ import (
 	"io/ioutil"
 )
 
-func generateKeyPair(bits int) (*rsa.PrivateKey, *rsa.PublicKey) {
+func GenerateKeyPair(bits int) (*rsa.PrivateKey, *rsa.PublicKey) {
 	// This method requires a random number of bits.
 	privateKey, err := rsa.GenerateKey(rand.Reader, bits)
 	if err != nil {
@@ -20,7 +20,7 @@ func generateKeyPair(bits int) (*rsa.PrivateKey, *rsa.PublicKey) {
 	return privateKey, &privateKey.PublicKey
 }
 
-func exportPubKeyAsPEMStr(pubkey *rsa.PublicKey) string {
+func ExportPubKeyAsPEMStr(pubkey *rsa.PublicKey) string {
 	pubKeyPem := string(pem.EncodeToMemory(
 		&pem.Block{
 			Type:  "RSA PUBLIC KEY",
@@ -31,7 +31,7 @@ func exportPubKeyAsPEMStr(pubkey *rsa.PublicKey) string {
 }
 
 // Export private key as a string in PEM format
-func exportPrivKeyAsPEMStr(privkey *rsa.PrivateKey) string {
+func ExportPrivKeyAsPEMStr(privkey *rsa.PrivateKey) string {
 	privKeyPem := string(pem.EncodeToMemory(
 		&pem.Block{
 			Type:  "RSA PRIVATE KEY",
@@ -42,26 +42,26 @@ func exportPrivKeyAsPEMStr(privkey *rsa.PrivateKey) string {
 
 }
 
-func saveKeyToFile(keyPem, filename string) {
+func SaveKeyToFile(keyPem, filename string) {
 	pemBytes := []byte(keyPem)
 	ioutil.WriteFile(filename, pemBytes, 0400)
 }
 
 // Decode private key struct from PEM string
-func exportPEMStrToPrivKey(priv []byte) *rsa.PrivateKey {
+func ExportPEMStrToPrivKey(priv []byte) *rsa.PrivateKey {
 	block, _ := pem.Decode(priv)
 	key, _ := x509.ParsePKCS1PrivateKey(block.Bytes)
 	return key
 }
 
 // Decode public key struct from PEM string
-func exportPEMStrToPubKey(pub []byte) *rsa.PublicKey {
+func ExportPEMStrToPubKey(pub []byte) *rsa.PublicKey {
 	block, _ := pem.Decode(pub)
 	key, _ := x509.ParsePKCS1PublicKey(block.Bytes)
 	return key
 }
 
-func readKeyFromFile(filename string) []byte {
-	key, _ := ioutil.ReadFile(filename)
-	return key
+func ReadKeyFromFile(filename string) ([]byte, error) {
+	key, err := ioutil.ReadFile(filename)
+	return key, err
 }
