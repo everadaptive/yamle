@@ -25,7 +25,7 @@ yamle decrypt example/test_mixed_test_keys.yaml
 
 generate cluster keys
 ```
-yamle --cluster-key --gen-keys
+yamle gen-keys --cluster-key --cluster-key-name=yamle-keys --cluster-key-namespace=default
 ```
 
 encrypt with cluster keys
